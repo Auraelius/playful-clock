@@ -1,7 +1,7 @@
 {
   "name": "bullplay",
   "version": "0.0.1",
-  "description": "Playground to learn the Bull queuing library",
+  "description": "Playground to learn the BullMQ queuing library",
   "main": "index.js",
   "type": "module",
   "scripts": {

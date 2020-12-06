@@ -1,0 +1,1 @@
+# Playground to learn the BullMQ queuing library
