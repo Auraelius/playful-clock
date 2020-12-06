@@ -1,0 +1,17 @@
+{
+  "name": "bullplay",
+  "version": "0.0.1",
+  "description": "Playground to learn the Bull queuing library",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Al Zimmerman <auraelius@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "bullmq": "^1.11.0"
+  },
+  "keywords": []
+}
