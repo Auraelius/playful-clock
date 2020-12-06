@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
+    "bull-board": "^1.1.1",
     "bullmq": "^1.11.0"
   },
   "keywords": []
