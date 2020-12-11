@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { Queue, Worker } from 'bullmq';
 
-const myQueue = new Queue('foo');
-const worker = new Worker('foo', async (job) => {
+const myQueue = new Queue('device-values');
+const worker = new Worker('device-values', async (job) => {
   console.log(job.data);
 });

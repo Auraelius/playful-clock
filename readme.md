@@ -2,3 +2,6 @@
 
 Install and start a local copy of redis before using this
 
+`npm run redis-start`
+
+

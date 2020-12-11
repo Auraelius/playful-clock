@@ -1,18 +1,36 @@
 {
   "name": "bullplay",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Playground to learn the BullMQ queuing library",
-  "main": "index.js",
+  "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bull-repl": "./node_modules/.bin/bull-repl",
+    "redis-start": "redis-server /usr/local/etc/redis.conf",
+    "redis-stop": "redis-cli shutdown save",
+    "test": "mocha --require test/setup.js",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "author": "Al Zimmerman <auraelius@gmail.com>",
   "license": "MIT",
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
+  },
   "dependencies": {
     "bull-board": "^1.1.1",
-    "bullmq": "^1.11.0"
+    "bull-repl": "^0.26.3",
+    "bullmq": "^1.11.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.2.0",
+    "morgan": "^1.10.0",
+    "winston": "^3.3.3",
+    "xss": "^1.0.8"
   },
   "keywords": []
 }
