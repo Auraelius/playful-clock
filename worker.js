@@ -4,5 +4,5 @@ import { Queue, Worker } from 'bullmq';
 
 const myQueue = new Queue('device-values');
 const worker = new Worker('device-values', async (job) => {
-  console.log(job.data);
+  console.table(job.data);
 });

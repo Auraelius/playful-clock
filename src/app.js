@@ -61,11 +61,12 @@ app.use(express.json());
 app.use('/admin/queues', router); //bullmq administrative interface
 
 
-app.post('/value', async (res, req, next)=>{
+app.post('/value', async (req, res, next)=>{
   // todo validate request
   const newValue = req.body; // should have value and intensity properties
-  await valueQueue.add('newValue', newValue);
-  res.send(200);
+  console.table(newValue);
+   await valueQueue.add('newValue', newValue);
+   res.sendStatus(200);
 })
 
 
