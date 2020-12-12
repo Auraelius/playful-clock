@@ -16,7 +16,7 @@ import helmet from 'helmet';
 
 // These are the queuing pieces, including an admin interface
 import { Queue, Worker, QueueScheduler } from 'bullmq';
-import { setQueues, BullMQAdapter, BullAdapter } from 'bull-board';
+import { setQueues, BullMQAdapter, BullAdapter, router } from 'bull-board';
 
 // Finally, here's our code:
 import logger from './logger.js';
@@ -33,9 +33,10 @@ import { NODE_ENV } from '../config.js';
 // set up queue
 // todo check for errors in the following steps (IN CASE REDIS ISN'T RUNNING, ETC)
 const valueQueue = new Queue('device-values');
+setQueues([new BullAdapter(valueQueue)]);
+
 // enable delayed jobs in our queue for device
 const myQueueScheduler = new QueueScheduler('device-values');
-
 
 // set up express
 export const app = express();
@@ -51,12 +52,14 @@ app.use(
 // security
 app.use(cors());
 app.use(helmet());
-app.use(validateBearerToken);
+// app.use(validateBearerToken);
 
 // all endpoints take json payloads if they take one at all
 app.use(express.json());
 
 // put our routes here
+app.use('/admin/queues', router); //bullmq administrative interface
+
 
 app.post('/value', async (res, req, next)=>{
   // todo validate request
