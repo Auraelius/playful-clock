@@ -14,7 +14,7 @@ The most basic animation is a clock that updates the nixies once a second. This 
 
 `npm run start-redis`
 
-and adjust it to match your installation. (Currently we have a simple install that isn't as secure as we'd like. We'll be moving this to a more secure install and then we'll take away this note.)
+and adjust it to match your installation. (Currently I have a simple install that isn't as secure as I'd like. I'll be moving this to a more secure install and then I'll take away this note.)
 
 1. On raspi this requires that  `arduinix/worker.js` runs as root (so it has permissions to manipulate the hardware GPIO pins).
 
@@ -27,19 +27,23 @@ To start the worker process, use:
 `npm start`
 
 You should see the nixies begin to display the time if everthing works. :-)
+
+Of course, I'll be scripting this so the raspberry pi will start everything up when it boots.
 ## queue library
+
+I'm using `BullMq` because it seems to be the successor to `Bull`, but the docs aren't as good so I'm using the Bull docs.
 
 More info on the bull/bullmq queue library: https://github.com/taskforcesh/bullmq
 
-This uses bull-board. In chrome, you can see the queues at http://localhost/admin/queues. Bull-board apparently doesn't work on safari, but chrome is ok
+This uses `bull-board`. In chrome, you can see the queues at http://localhost/admin/queues. Bull-board apparently doesn't work on safari, but chrome is ok
 
 More info: https://github.com/vcapretz/bull-board
 
-You can also use bull-repl:
+You can also use `bull-repl`:
 
 `npm run bull-repl`
 
-More info at [https://github.com/darky/bull-repl|https://github.com/darky/bull-repl]
+More info at https://github.com/darky/bull-repl
 
 ## logging
 

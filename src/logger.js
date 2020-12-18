@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { NODE_ENV } from '../config.js';
+const NODE_ENV = process.env.NODE_ENV;
 
 // this appears to set up an info logger only. what about .error?
 

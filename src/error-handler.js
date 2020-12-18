@@ -1,5 +1,6 @@
-import { NODE_ENV } from '../config.js';
 import logger from'./logger.js';
+
+const NODE_ENV = process.env.NODE_ENV;
 
 function errorHandler(error, req, res, next) {
   let response

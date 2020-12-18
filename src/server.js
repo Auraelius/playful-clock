@@ -1,5 +1,5 @@
 import app from './app.js';
-import { EXPRESS_PORT } from '../config.js';
+const EXPRESS_PORT = process.env.EXPRESS_PORT;
 
 
 app.listen(EXPRESS_PORT, () => {

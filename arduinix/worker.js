@@ -10,11 +10,6 @@
   it returns the command verb in a success message otherwise
 */
 
-// setup worker from configuration environment variables
-import dotenv from 'dotenv';
-const configuration = dotenv.config();
-configuration.error ? logger.error(configuration.error):logger.info(configuration.parsed);
-import { TUBE_MUX_INTERVAL_MS } from '../config.js';
 
 // attache to the correct queue
 import { Queue } from 'bullmq';
@@ -22,7 +17,7 @@ const deviceQueue = new Queue('device-values'); // todo catch and log errors
 
 //  common variables
 const tubeMuxTimer ; // created when we start mux. used to shut mux down
-const tubeMuxInterval = TUBE_MUX_INTERVAL_MS;
+const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
 
 // where the mux gets the next value to be displayed
 let nextValue = { 

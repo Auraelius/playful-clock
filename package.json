@@ -8,6 +8,8 @@
     "bull-repl": "./node_modules/.bin/bull-repl",
     "start-redis": "/home/pi/dev/redis/redis-6.0.9/src/redis-server /home/pi/dev/redis/redis-6.0.9/redis.conf",
     "stop-redis": "/home/pi/dev/redis/redis-6.0.9/src/redis-cli shutdown save",
+    "start-redis-mac": "redis-server /usr/local/etc/redis.conf",
+    "stop-redis-mac": "redis-cli shutdown save",
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",

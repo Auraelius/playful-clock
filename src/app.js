@@ -27,8 +27,8 @@ import errorHandler from './error-handler.js';
 
 // setup app
 const configuration = dotenv.config();
-configuration.error ? logger.error(configuration.error):logger.info(configuration.parsed);
-import { NODE_ENV } from '../config.js';
+configuration.error ? logger.error(configuration.error):logger.info("Startup configuration:", configuration.parsed);
+const NODE_ENV = process.env.NODE_ENV;
 
 // set up queue
 // todo check for errors in the following steps (IN CASE REDIS ISN'T RUNNING, ETC)
