@@ -6,11 +6,12 @@
   "type": "module",
   "scripts": {
     "bull-repl": "./node_modules/.bin/bull-repl",
-    "redis-start": "redis-server /usr/local/etc/redis.conf",
-    "redis-stop": "redis-cli shutdown save",
+    "start-redis": "/home/pi/dev/redis/redis-6.0.9/src/redis-server /home/pi/dev/redis/redis-6.0.9/redis.conf",
+    "stop-redis": "/home/pi/dev/redis/redis-6.0.9/src/redis-cli shutdown save",
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start-worker": "sudo node ./arduinix/worker.js"
   },
   "author": "Al Zimmerman <auraelius@gmail.com>",
   "license": "MIT",

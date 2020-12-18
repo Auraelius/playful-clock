@@ -21,7 +21,7 @@ import { setQueues, BullMQAdapter, BullAdapter, router } from 'bull-board';
 // Finally, here's our code:
 import logger from './logger.js';
 import errorHandler from './error-handler.js';
-import validateBearerToken from './validate-bearer-token.js';
+// import validateBearerToken from './validate-bearer-token.js';
 
 // let's get down to business
 
