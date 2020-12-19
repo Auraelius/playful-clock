@@ -15,10 +15,7 @@ let nextValue = {
   accepted: false, // set before the first pair is lit
   displayed: false, // set when the last pair has been lit and the mux is ready to accept another newValue
 }; 
-
-
-
-const pins = {} // Gpio obj for controlling pins
+const pins = {} // Gpio objs for controlling pins
 
 
 export function tubeMultiplexer (nextValue){
@@ -36,6 +33,7 @@ import {initialGpioValues} from './initial-gpio-values.js'
 export function setUpArduinix (){
   logger.info('worker: setUpArduinix: starting'); 
   pins = setGpioValues(pins, initialGpioValues)
+  // todo Error checking!
   return true;
 }
 
@@ -81,14 +79,15 @@ export function shutDownArduinix(jobData){
 }
 
 function setGpioValues(pins, gpioValues){
-  // takes pin configuration objects
+  // takes
+  // pin objects and pin configuration objects
+  // updates the pin object containing the gpio objects needed for accessing that pin
 
   for (const [pinName, setup] of Object.entries(gpioValues)) {
+    // todo check to see if we are changing a pin and make sure we do that without messing up hardware
     pins[pinName] = new gpioValues(setup.GpioNumber, setup.options); // sets mode on pin
     pins[pin].digitalWrite(setup.initialValue); // sets initial value of pin
   }
-  // returns an object containing the gpio objects needed for accessing that pin
-  return pins;
 }
 /*
 this is used like this: Say there's a pin named CathodeB

@@ -37,10 +37,12 @@ let nextValue = {
 import { tubeMultiplexer, setUpArduinix, setNextValue, shutDownArduinix} from './worker-utils.js';
 
 // worker processing
+
+// currently doesn't have error checking but the try/catch will be useful later
 deviceQueue.process('setup', async (job, done)=> {
   logger.info("worker got SETUP command")
   try {
-    setUpArduinix(job.data);
+    setUpArduinix();
     tubeMuxTimer = setInterval(tubeMultiplexer(nextValue), tubeMuxInterval);
     logger.info("worker set up the arduinix and started tube multiplexer");
     done(null, "setup successful"); // signal job successful
