@@ -14,32 +14,35 @@ import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
 
-// These are the queuing pieces, including an admin interface
-import { Queue, Worker, QueueScheduler } from 'bullmq';
-import { setQueues, BullMQAdapter, BullAdapter, router } from 'bull-board';
-
-// Finally, here's our code:
+// Here's our code:
 import logger from './logger.js';
 import errorHandler from './error-handler.js';
 // import validateBearerToken from './validate-bearer-token.js';
 
 // let's get down to business
+const app = express();
 
-// setup app
+// setup app - first get environment vars
 const configuration = dotenv.config();
-configuration.error ? logger.error(configuration.error):logger.info("Startup configuration:", configuration.parsed);
+configuration.error
+  ? logger.error('Startup error: ', configuration.error)
+  : logger.info('Startup configuration: ', configuration.parsed);
+
 const NODE_ENV = process.env.NODE_ENV;
 
+// store all the config vars (and allow for tweaking while running)
+app.set('TUBE_MUX_INTERVAL_MS', process.env.TUBE_MUX_INTERVAL_MS);
+
 // set up queue
+import { Queue, QueueScheduler } from 'bullmq';
+import { setQueues, BullMQAdapter, BullAdapter, router } from 'bull-board';
+
 // todo check for errors in the following steps (IN CASE REDIS ISN'T RUNNING, ETC)
 const valueQueue = new Queue('device-values');
 setQueues([new BullAdapter(valueQueue)]);
 
 // enable delayed jobs in our queue for device
 const myQueueScheduler = new QueueScheduler('device-values');
-
-// set up express
-export const app = express();
 
 // start middleware pipline
 
@@ -54,12 +57,11 @@ app.use(cors());
 app.use(helmet());
 // app.use(validateBearerToken);
 
-// all endpoints take json payloads if they take one at all
+// all endpoints take a json payload if they take one at all
 app.use(express.json());
 
 // put our routes here
 app.use('/admin/queues', router); //bullmq administrative interface
-
 
 app.post('/value', async (req, res, next)=>{
   // todo validate request
@@ -68,7 +70,6 @@ app.post('/value', async (req, res, next)=>{
    await valueQueue.add('newValue', newValue);
    res.sendStatus(200);
 })
-
 
 // proof of life
 app.get('/', (req, res) => {

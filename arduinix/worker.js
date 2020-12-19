@@ -10,8 +10,14 @@
   it returns the command verb in a success message otherwise
 */
 
+// setup worker from configuration environment variables
+import dotenv from 'dotenv';
+const configuration = dotenv.config();
+configuration.error
+  ? logger.error('Worker startup error: ', configuration.error)
+  : logger.info('Worker startup configuration: ', configuration.parsed);
 
-// attache to the correct queue
+// attach to the correct queue
 import { Queue } from 'bullmq';
 const deviceQueue = new Queue('device-values'); // todo catch and log errors
 
@@ -55,6 +61,11 @@ deviceQueue.process('display', async (job, done)=> {
     done(new Error('could not set the next value'));
   }
 });
+/*
+  at the current time, setNextValue does not throw exceptions or return any error status. we are logging to see if this routine set new values quicker than the mux can display them. if it becomes a problem we will need to hold off setting the new value until the old one has been displayed at least once. We don't want to mess up the display and at these refresh rates it would be nmoticeable.
+
+  We'll have to figure out how to hold off by sleeping and letting the event loop do other stuff while we wait a few milliseconds
+*/ 
   
 deviceQueue.process('shutdown', async (job, done)=> {
   logger.info("worker got SHUTDOWN command")
