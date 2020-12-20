@@ -1,33 +1,67 @@
 /* 
   this utility module holds some storage for the nitty gritty details
   and a bunch of functions for manipulating those details
-
 */
 import logger from '../src/logger.js';
 
+// interface from worker 
+import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
+
+//----------------------------------------------------------------//--
 // persistant private storage
-const currentValue = {}; // the number we are displaying
-
-let nextValue = {
-  // the next number we are going to display
-  digits: '12345678',
-  brightness: '99999999',
-  accepted: false, // set before the first pair is lit
-  displayed: false, // set when the last pair has been lit and the mux is ready to accept another newValue
-}; 
 const pins = {} // Gpio objs for controlling pins
-
+const currentValue = {
+  digits: '12345678',
+  brightness: '99999999'
+}; // the number we are displaying
+let tubePair = 0;
+let numberOfPairs = process.env.NUMBER_OF_TUBES/2;
 
 export function tubeMultiplexer (nextValue){
   /* 
-    every time this wakes up, it lights up the next pair of tubes
+    every time this wakes up, it lights up the current pair of tubes
     by setting the raspi gpio pins appropriately
-    if it gets to the end of the set of pairs, it checks the nextValue buffer
-    if the buffer has a new value, the mux accepts it, sets the nextvalue buffer to null so signal acceptance, and starts the next cycle.
+    then it checks for new values, sets things up for the next pair, and goes to sleep.
   */
-  logger.info('worker: tubeMultiplexer: starting');
-  return true;
+
+  // todo remove this for faster performance (but continue to gather timing metrics)
+  logger.info(`worker-utils: tubeMultiplexer: starting. tubePair: ${tubePair}`);
+
+  try {
+    displayNumberPair(tubePair, currentValue, pins, ); // display the current pair
+  } catch(e) {
+    throw (`tubeMultiplexer: could not set GPIO pins. displayNumberPair: ${e}`);
+  }
+
+  
+
+  if (tubePair++ < numberOfPairs) { // more pairs to go; back to sleep
+    return true; 
+  } else if (nextValue.status === s.ACCEPTED || nextValue.status === s.DISPLAYED ) {
+    // looks like there's no new newValue
+    nextValue.status === s.DISPLAYED;
+    tubePair = 0; // start over with the first pair next time
+    return true;
+  } else if (nextValue.status === s.SET) { // new digits!
+    currentValue.digits = nextValue.digits;
+    currentValue.brightness = nextValue.brightness;
+    nextValue.status = s.ACCEPTED;
+    tubePair = 0;
+  } else { // unknown nextValue Status or something else wrong
+    throw new Error('tubeMultiplexer: unknown nextValue status or something else wrong');
+  }
 }
+
+function displayNumberPair(pair, value, pins){
+  if(isEmpty(pins)) throw 'displayNumberPair: empty pins object'; // did we forget to set up?
+ // moremoremore
+}
+
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+//----------------------------------------------------------------//--
 
 import {initialGpioValues} from './initial-gpio-values.js'
 export function setUpArduinix (){
@@ -49,13 +83,7 @@ export function setNextValue(jobData, value) {
     sets the nextValue.accepted and nextValue.displayed to false, 
   */
   logger.info('worker: setNextValue: starting');
-  if (nextValue.displayed = false) {
-    // we haven't finished displaying the previous number
-    // shouild we tell the mux to start over with new number?
-    // for now we'll see how often this occurs
-    logger.warn(
-      `Overwriting nextValue ${nextValue.digits} with ${value.digits}`
-    );
+
 
   }
   nextValue.digits = value.digits;

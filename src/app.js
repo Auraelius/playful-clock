@@ -32,6 +32,8 @@ const NODE_ENV = process.env.NODE_ENV;
 
 // store all the config vars (and allow for tweaking while running)
 app.set('TUBE_MUX_INTERVAL_MS', process.env.TUBE_MUX_INTERVAL_MS);
+app.set('NUMBER_OF_TUBES', process.env.NUMBER_OF_TUBES);
+;
 
 // set up queue
 import { Queue, QueueScheduler } from 'bullmq';
@@ -63,7 +65,12 @@ app.use(express.json());
 // put our routes here
 app.use('/admin/queues', router); //bullmq administrative interface
 
-app.post('/value', async (req, res, next)=>{
+app.post('/clock') {
+  startAnimation('clock');
+  res.sendStatus(200);
+}
+
+app.post('/display', async (req, res, next)=>{
   // todo validate request
   const newValue = req.body; // should have value and intensity properties
   console.table(newValue);
