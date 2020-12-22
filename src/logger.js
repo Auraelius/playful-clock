@@ -1,7 +1,10 @@
 import winston from 'winston';
 const NODE_ENV = process.env.NODE_ENV;
 
-// this appears to set up an info logger only. what about .error?
+// todo add a timestamp to format
+// todo add an errors log and a common log
+// todo add http reqquest logging to common log
+// todo add color to console use
 
 const logger = winston.createLogger({
   level: 'info',

@@ -13,7 +13,7 @@
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "start-worker": "sudo node ./arduinix/worker.js"
+    "start-worker": "sudo node ./src/arduinix/worker.js"
   },
   "author": "Al Zimmerman <auraelius@gmail.com>",
   "license": "MIT",
@@ -32,6 +32,7 @@
     "express": "^4.17.1",
     "helmet": "^4.2.0",
     "morgan": "^1.10.0",
+    "pigpio": "^3.2.4",
     "winston": "^3.3.3",
     "xss": "^1.0.8"
   },

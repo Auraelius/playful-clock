@@ -15,7 +15,7 @@
   The mux currently always completes the display of all the digits before checking if there's a newValue from the worker. we want each number to be displayed at least once
 
 */
-export const nextValueStatusEnum = {
+const nextValueStatusEnum = {
   SET: 'set', // worker has set new value
   ACCEPTED: 'accepted', // mux has accepted 
   DISPLAYED: 'displayed', // the last pair has been lit,
@@ -30,7 +30,7 @@ export const nextValueStatusEnum = {
 let nextValue = {
   digits: '00000000',
   brightness: '99999999',
-  status: NextValueStatusEnum.SET,
+  status: nextValueStatusEnum.SET,
 }; 
 
-export  {nextValue, NextValueStatusEnum};
+export  {nextValue, nextValueStatusEnum};

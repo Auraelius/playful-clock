@@ -6,28 +6,14 @@
   shutdown - stop the mux and set the hardware to off state
 
   it returns error status if unable to accomplish the request
-  it returns the command verb in a success message otherwise
+  it calls the done() method
 */
 
-import logger from '../src/logger.js';
-// setup worker from configuration environment variables
+import logger from '../logger.js';
 import dotenv from 'dotenv';
-const configuration = dotenv.config();
-configuration.error
-  ? logger.error('Worker startup error: ', configuration.error)
-  : logger.info('Worker startup configuration: ', configuration.parsed);
-
-// attach to the correct queue
 import { Queue } from 'bullmq';
-const deviceQueue = new Queue('device-values'); // todo catch and log errors
-
-//  common variables
-const tubeMuxTimer; // created when we start mux. used to shut mux down
-const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
-
 import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
-
-// worker functions
+import { invalidDisplayJobData } from './invalid-display-job-data.js';
 import {
   tubeMultiplexer,
   setUpArduinix,
@@ -35,16 +21,30 @@ import {
   shutDownArduinix,
 } from './worker-utils.js';
 
+
+// setup worker from configuration environment variables
+const configuration = dotenv.config();
+configuration.error
+  ? logger.error('Worker startup error: ', configuration.error)
+  : logger.info('Worker startup configuration: ', configuration.parsed);
+
+// attach to the correct queue
+const deviceQueue = new Queue('device-values'); // todo catch and log errors
+
+//  common variables
+const tubeMuxTimer = {}; // created when we start mux. used to shut mux down
+const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
+
 // worker processing
 
 //----------------------------------------------------------------//--
-// currently doesn't have error checking but the try/catch will be useful later
+// ? currently doesn't have error checking but the try/catch will be useful later
 deviceQueue.process('setup', async (job, done) => {
-  logger.info('worker got SETUP command');
+  logger.info('worker: got SETUP command');
   try {
     setUpArduinix();
     tubeMuxTimer = setInterval(tubeMultiplexer(nextValue), tubeMuxInterval);
-    logger.info('worker set up the arduinix and started tube multiplexer');
+    logger.info('worker: set up the arduinix and started tube multiplexer');
     done(null, 'setup successful'); // signal job successful
   } catch {
     logger.error(
@@ -83,7 +83,7 @@ deviceQueue.process('shutdown', async (job, done) => {
   logger.info('worker got SHUTDOWN command');
   try {
     clearInterval(tubeMuxTimer);
-    shutDownArduinix(job.data);
+    //// shutDownArduinix(job.data);
     logger.info('worker stopped the mux, and shut down the arduinix');
     done(null, 'shutdown successful'); // signal job successful
   } catch {
