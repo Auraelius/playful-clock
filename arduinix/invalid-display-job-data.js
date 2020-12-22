@@ -7,8 +7,9 @@ export function invalidDisplayJobData(data) {
     and the chars in the brightness are 0-9
     then return false
     else return true
+    todo check to make sure t is valid
   */
-  let t = process.env.NUMBER_OF_TUBES;
+  let t = parseInt(process.env.NUMBER_OF_TUBES,10);
   const validDigits = new RegExp(`[0-9|b| ]{${t}}`);
   const validBrightness = new RegExp(`[0-9]{${t}}`);
 
@@ -17,8 +18,8 @@ export function invalidDisplayJobData(data) {
   if (!data.hasOwnProperty('brightness')) return true;
   if (isNotString(data.digits)) return true;
   if (isNotString(data.brightness)) return true;
-  if (data.digits.length !== process.env.NUMBER_OF_TUBES) return true;
-  if (data.brightness.length !== process.env.NUMBER_OF_TUBES) return true;
+  if (data.digits.length !== t) return true;
+  if (data.brightness.length !== t) return true;
   if (!validDigits.test(data.digits)) return true;
   if (!validBrightness.test(data.brightness)) return true;
   return false;
