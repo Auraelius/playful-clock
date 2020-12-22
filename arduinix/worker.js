@@ -9,6 +9,7 @@
   it returns the command verb in a success message otherwise
 */
 
+import logger from '../src/logger.js';
 // setup worker from configuration environment variables
 import dotenv from 'dotenv';
 const configuration = dotenv.config();
@@ -75,30 +76,7 @@ deviceQueue.process('display', async (job, done) => {
   nextValue.status = s.SET;
   logger.info('worker passed that info off to the mux');
   done(null, 'display finished'); // signal job successful
-
 });
-
-
-
-function invalidDisplayJobData(data) {
-  return false;
-  /*
-  if it has keys `digits` and `brightness`
-  and those keys have string values
-  and those strings are the same length as the number of tubes
-  and the chars in the digits are 0-9 or b or ' '
-  and the chars in the brightness are 0-9
-  then return false
-  else return true
-  */
-
- if (!data.hasOwnPropery(digits)) return true;
- if (!data.hasOwnPropery(brightness)) return true;
-
-
-
-}
-
 
 //----------------------------------------------------------------//--
 deviceQueue.process('shutdown', async (job, done) => {

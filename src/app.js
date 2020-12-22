@@ -17,7 +17,11 @@ import helmet from 'helmet';
 // Here's our code:
 import logger from './logger.js';
 import errorHandler from './error-handler.js';
-// import validateBearerToken from './validate-bearer-token.js';
+import {
+  stopAllAnimations, 
+  startAnimation
+} from './animations/utils.js';
+import validateBearerToken from './validate-bearer-token.js';
 
 // let's get down to business
 const app = express();
@@ -57,15 +61,15 @@ app.use(
 // security
 app.use(cors());
 app.use(helmet());
-// app.use(validateBearerToken);
+app.use(validateBearerToken);
 
 // all endpoints take a json payload if they take one at all
 app.use(express.json());
 
 // put our routes here
-app.use('/admin/queues', router); //bullmq administrative interface
-
 app.post('/clock') {
+  logger.info('starting POST /clock')
+  stopAllAnimations();
   startAnimation('clock');
   res.sendStatus(200);
 }
@@ -74,9 +78,13 @@ app.post('/display', async (req, res, next)=>{
   // todo validate request
   const newValue = req.body; // should have value and intensity properties
   console.table(newValue);
-   await valueQueue.add('newValue', newValue);
+  stopAllAnimations();
+  await valueQueue.add('newValue', newValue);
    res.sendStatus(200);
 })
+
+//bullmq administrative interface
+app.use('/admin/queues', router); 
 
 // proof of life
 app.get('/', (req, res) => {
