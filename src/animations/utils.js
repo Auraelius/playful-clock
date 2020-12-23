@@ -31,16 +31,15 @@
   todo set up listeners to watch the queues and list which animations still have events in the queues
 */
 
-*/
 
 const currentAnimationTimers = []; // of timer objects
 
-import clock from 'clock.js';
+import clock from './clock.js';
 const registeredAnimations = {
   "clock" : clock
 }
 
-import logger from './logger.js';
+import logger from '../logger.js';
 
 /*
   Stops any and all animation processes that may be running

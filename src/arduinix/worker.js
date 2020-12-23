@@ -11,7 +11,7 @@
 
 import logger from '../logger.js';
 import dotenv from 'dotenv';
-import { Queue } from 'bullmq';
+import Queue from 'bull';
 import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
 import { invalidDisplayJobData } from './invalid-display-job-data.js';
 import {
@@ -20,7 +20,6 @@ import {
   setNextValue,
   shutDownArduinix,
 } from './worker-utils.js';
-
 
 // setup worker from configuration environment variables
 const configuration = dotenv.config();

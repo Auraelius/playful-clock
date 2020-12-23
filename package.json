@@ -13,7 +13,8 @@
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "start-worker": "sudo node ./src/arduinix/worker.js"
+    "start-worker-mac": "sudo -E node ./src/arduinix/worker.js",
+    "start-worker": "sudo /home/pi/.nvm/versions/node/v14.15.3/bin/node ./src/arduinix/worker.js"
   },
   "author": "Al Zimmerman <auraelius@gmail.com>",
   "license": "MIT",
@@ -24,9 +25,9 @@
     "supertest": "^6.0.1"
   },
   "dependencies": {
+    "bull": "^3.20.0",
     "bull-board": "^1.1.1",
     "bull-repl": "^0.26.3",
-    "bullmq": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

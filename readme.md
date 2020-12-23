@@ -1,4 +1,4 @@
-# Playground to learn the BullMQ queuing library
+# Playground to learn the Bull queuing library
 
 ## architecture
 
@@ -31,11 +31,11 @@ You should see the nixies begin to display the time if everthing works. :-)
 Of course, I'll be scripting this so the raspberry pi will start everything up when it boots.
 ## queue library
 
-I'm using `BullMq` because it seems to be the successor to `Bull`, but the docs aren't as good so I'm using the Bull docs.
+I'm using `Bull` because it seems to be better documented compared to its successor `BullMQ`.
 
-More info on the bull/bullmq queue library: https://github.com/taskforcesh/bullmq
+More info on the `bull` queue library: https://optimalbits.github.io/bull/
 
-This uses `bull-board`. In chrome, you can see the queues at http://localhost/admin/queues. Bull-board apparently doesn't work on safari, but chrome is ok
+This uses `bull-board`. In chrome, you can see the queues at http://localhost/admin/queues. Bull-board apparently doesn't work on safari.
 
 More info: https://github.com/vcapretz/bull-board
 

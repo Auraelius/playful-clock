@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 // This is an express server for driving a display of nixies and gauges
-// it uses a BullMQ message queue to send values to a separate node process 
+// it uses a Bull message queue to send values to a separate node process 
 // that has to run as root in order to control the GPIO hardware
 
 // configuration variables
@@ -13,6 +13,10 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
+
+// Here's the message queue system
+import Queue  from 'bull'; 
+import { setQueues, BullAdapter, router } from 'bull-board';
 
 // Here's our code:
 import logger from './logger.js';
@@ -40,15 +44,10 @@ app.set('NUMBER_OF_TUBES', process.env.NUMBER_OF_TUBES);
 ;
 
 // set up queue
-import { Queue, QueueScheduler } from 'bullmq';
-import { setQueues, BullMQAdapter, BullAdapter, router } from 'bull-board';
 
 // todo check for errors in the following steps (IN CASE REDIS ISN'T RUNNING, ETC)
 const valueQueue = new Queue('device-values');
 setQueues([new BullAdapter(valueQueue)]);
-
-// enable delayed jobs in our queue for device
-const myQueueScheduler = new QueueScheduler('device-values');
 
 // start middleware pipline
 
@@ -61,35 +60,45 @@ app.use(
 // security
 app.use(cors());
 app.use(helmet());
-app.use(validateBearerToken);
-
-// all endpoints take a json payload if they take one at all
-app.use(express.json());
-
-// put our routes here
-app.post('/clock') {
-  logger.info('starting POST /clock')
-  stopAllAnimations();
-  startAnimation('clock');
-  res.sendStatus(200);
-}
-
-app.post('/display', async (req, res, next)=>{
-  // todo validate request
-  const newValue = req.body; // should have value and intensity properties
-  console.table(newValue);
-  stopAllAnimations();
-  await valueQueue.add('newValue', newValue);
-   res.sendStatus(200);
-})
-
-//bullmq administrative interface
-app.use('/admin/queues', router); 
 
 // proof of life
 app.get('/', (req, res) => {
   res.send('Nixie server is listening');
 });
+
+// app.use(validateBearerToken);
+
+// all endpoints take a json payload if they take one at all
+app.use(express.json());
+
+// put our routes here
+
+app.get('/setup', async (req, res) => {
+  logger.info('app: starting GET /setup')
+  await valueQueue.add('setup');
+  res.sendStatus(200);
+});
+
+app.post('/clock', (req, res) => {
+  logger.info('app: starting POST /clock')
+  stopAllAnimations();
+  startAnimation('clock');
+  res.sendStatus(200);
+});
+
+app.post('/display', async (req, res)=>{
+  // todo validate request
+  const newValue = req.body; // should have value and intensity properties
+  console.table(newValue);
+  stopAllAnimations();
+  await valueQueue.add('display', newValue);
+  res.sendStatus(200);
+});
+
+//bull-board administrative interface
+app.use('/admin/queues', router); 
+
+
 
 // error handlers
 app.use(errorHandler);
