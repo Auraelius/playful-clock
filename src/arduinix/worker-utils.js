@@ -6,6 +6,10 @@
 */
 import logger from '../logger.js';
 
+// interface to hardware
+import pigpio from 'pigpio';
+const Gpio = pigpio.Gpio;
+
 // interface from worker 
 import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
 import { initialGpioValues } from './initial-gpio-values.js'
@@ -14,8 +18,8 @@ import { shutdownGpioValues } from './shutdown-gpio-values.js'
 
 //----------------------------------------------------------------//--
 // persistant private storage
-const pins = {}              // Gpio objs for controlling pins
-const currentValue = {      // the number we are displaying
+let pins={};              // Gpio objs for controlling pins
+let currentValue = {      // the number we are displaying
   digits: '12345678',
   brightness: '99999999'
 }; 
@@ -30,17 +34,16 @@ export function tubeMultiplexer (nextValue){
   */
 
   // todo remove this for faster performance (but continue to gather timing metrics)
-  logger.info(`worker-utils: tubeMultiplexer: starting. tubePair: ${tubePair}`);
-
+  // // logger.info(`worker-utils: tubeMultiplexer: starting. tubePair: ${tubePair}`);
   try {
     // displayNumberPair(tubePair, currentValue, pins, ); 
     // * during testing we just want to see some action on output pins
-    pins[testPin].digitalWrite(Gpio.HIGH);
-    pins[testPin].digitalWrite(Gpio.LOW);
-    pins[testPin].digitalWrite(Gpio.HIGH);
-    pins[testPin].digitalWrite(Gpio.LOW);
+    pins['testPin'].digitalWrite(1);
+    pins['testPin'].digitalWrite(0);
+    pins['testPin'].digitalWrite(1);
+    pins['testPin'].digitalWrite(0);
   } catch(e) {
-    throw (`tubeMultiplexer: could not set GPIO pins. displayNumberPair: ${e}`);
+    throw (`tubeMultiplexer: could not set GPIO pins. displayNumberPair: ${tubePair}, Error: ${e}`);
   } //? who catches this?
 
   
@@ -63,9 +66,6 @@ export function tubeMultiplexer (nextValue){
   // }
 }
 
-function testOutput(){
-
-}
 function displayNumberPair(pair, value, pins){
   if(isEmpty(pins)) throw 'displayNumberPair: empty pins object'; // did we forget to set up?
  // ! moremoremore
@@ -78,7 +78,7 @@ function isEmpty(obj) {
 //----------------------------------------------------------------//--
 export function setUpArduinix (){
   logger.info('worker: setUpArduinix: starting'); 
-  pins = setGpioValues(pins, initialGpioValues)
+  setGpioValues(pins, initialGpioValues)
   // todo Error checking!
   return true;
 }
@@ -122,12 +122,14 @@ function setGpioValues(pins, gpioValues){
   // takes
   // pin objects and pin configuration objects
   // updates the pin object containing the gpio objects needed for accessing that pin
-
-  for (const [pinName, setup] of Object.entries(gpioValues)) {
+  logger.info('worker: setGpioValues: starting');
+  for (let [pinName, setup] of Object.entries(gpioValues)) {
+    logger.info(`worker: setGpioValues: pinName: ${pinName}, setup: ${Object.entries(setup)}`);
     //todo check to see if we are changing a pin and make sure we do that without messing up hardware
-    pins[pinName] = new gpioValues(setup.GpioNumber, setup.options); // sets mode on pin
-    pins[pin].digitalWrite(setup.setValue); // sets initial value of pin
+    pins[pinName] = new Gpio(setup.GpioNumber, setup.options); // sets mode on pin
+    pins[pinName].digitalWrite(setup.setValue); // sets initial value of pin
   }
+  return true;
 }
 /*
 this is used like this: Say there's a pin named CathodeB

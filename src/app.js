@@ -78,6 +78,11 @@ app.get('/setup', async (req, res) => {
   await valueQueue.add('setup');
   res.sendStatus(200);
 });
+app.get('/shutdown', async (req, res) => {
+  logger.info('app: starting GET /shutdown')
+  await valueQueue.add('shutdown');
+  res.sendStatus(200);
+});
 
 app.post('/clock', (req, res) => {
   logger.info('app: starting POST /clock')

@@ -11,7 +11,7 @@ const initialGpioValues ={
           mode: Gpio.OUTPUT,
           pullUpDown: Gpio.PUD_OFF,
         },
-        setValue: Gpio.LOW
+        setValue: 0
       }
 }
   // etc

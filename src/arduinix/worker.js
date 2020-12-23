@@ -31,7 +31,7 @@ configuration.error
 const deviceQueue = new Queue('device-values'); // todo catch and log errors
 
 //  common variables
-const tubeMuxTimer = {}; // created when we start mux. used to shut mux down
+let tubeMuxTimer = {}; // created when we start mux. used to shut mux down
 const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
 
 // worker processing
@@ -41,15 +41,17 @@ const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
 deviceQueue.process('setup', async (job, done) => {
   logger.info('worker: got SETUP command');
   try {
+    logger.info('worker: setting up Arduinix');
     setUpArduinix();
-    tubeMuxTimer = setInterval(tubeMultiplexer(nextValue), tubeMuxInterval);
-    logger.info('worker: set up the arduinix and started tube multiplexer');
+    logger.info('worker: setting up the mux');
+    tubeMuxTimer = setInterval(() => {tubeMultiplexer(nextValue)}, tubeMuxInterval);
+    logger.info('worker: setup successful');
     done(null, 'setup successful'); // signal job successful
-  } catch {
+  } catch(e) {
     logger.error(
-      'worker could not set up the arduinix or start tube multiplexer'
+      `worker setup exception: ${e}`
     );
-    done(new Error('could not set up hardware'));
+    done(`worker setup exception: ${e}`);
   }
 });
 
