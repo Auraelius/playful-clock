@@ -1,4 +1,4 @@
-# Playground to learn the Bull queuing library
+# Playful nixie-and-antique-meter-based clock
 
 ## architecture
 
