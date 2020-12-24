@@ -63,7 +63,7 @@ To be supplied
 
 Animations are sequences of device values at given times.
 
-Animations are created by adding delayed jobs to the device-values queues.
+Animations are created by adding delayed jobs to the `device-values` queue.
 
 Only one animation can run at a time. Starting a new animation flushes the queues before adding the new values and times.
 
@@ -71,4 +71,26 @@ repeating animations are still being worked out. Our currently only repeated ani
 
 ## driving hardware with a raspi
 
+We use the [pigpio package](https://github.com/fivdi/pigpio) based on the [pigpio library](http://abyz.me.uk/rpi/pigpio/index.html). It's been fairly straightforward setting this up. The only wrinkle is that the code tweaking the hardware has to run with root privleges, so we had to carve that portion out and put it in it's own little process.
+
+
+Ok, the elephant in the roo- er, ah, project is of course, why are you using a non-realtime linux-and-node-based raspberry pi to directly drive hardware? Because of all the various factors that can effect when things happen, the signals have considerable jitter in them.
+
+![oscilloscope view of jitttery signals](./public/img/jittery-signals.gif)
+
+The scope shows this simple `pigpio` code running in a 10ms node repeating timer:
+```javascript
+    pins['testPin'].digitalWrite(1);
+    pins['testPin'].digitalWrite(0);
+    pins['testPin'].digitalWrite(1);
+    pins['testPin'].digitalWrite(0);
+```
+Note how sometimes these statements take about 1.2uS (microseconds) each, but sometimes it's 2.8uS, or some value in between. The whole sequence is sometimes twice as long. And the timer usually hits 10 milliseconds (mS) but sometimes it can be as long as 10.4 mS between cycles. The point is that timing is only accurate within a small range.
+
+
+This is not unexpected. JavaScript is not first choice language in embedded systems. Node is not real time, although it is really easy to write asynchronous code and it's really fast. For example, timers are explicitly spec'd to be *at least* the given interval but sometimes longer. And this version of Linux (Raspberry OS) is non-real time. It shouldn't be a problem. But it's not like when I've coded in C & assembler with my own RTOS or used VxWorks back in the day.
+
+But it doesn't matter.
+
+The theme of this project was building something fun out of all the various parts I had sitting around in boxes while using the same technologies, tools, and techniques I use at work. I am Frankenstein and this is my monster.
 
