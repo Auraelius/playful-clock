@@ -1,7 +1,7 @@
 {
-  "name": "bullplay",
+  "name": "playful-clock",
   "version": "0.0.2",
-  "description": "Playground to learn the BullMQ queuing library",
+  "description": "a node-based animation platform using nixies and other hardware as displays",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

@@ -34,8 +34,8 @@ const app = express();
 // setup app - first get environment vars
 const configuration = dotenv.config();
 configuration.error
-  ? logger.error('Startup error: ', configuration.error)
-  : logger.info('Startup configuration: ', configuration.parsed);
+  ? logger.error('web: startup error: ', configuration.error)
+  : logger.info('web: startup configuration: ', configuration.parsed);
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -75,7 +75,7 @@ app.use(express.json());
 // put our routes here
 
 app.get('/setup', async (req, res) => {
-  logger.info('app: starting GET /setup')
+  logger.info('web: starting GET /setup')
   // //let jobStatus , resStatus ; 
   let job = await valueQueue.add('setup');
   // //jobStatus = await job.getstate();
@@ -88,13 +88,13 @@ app.get('/setup', async (req, res) => {
 
 
 app.get('/shutdown', async (req, res) => {
-  logger.info('app: starting GET /shutdown')
+  logger.info('web: starting GET /shutdown')
   await valueQueue.add('shutdown');
   res.sendStatus(200);
 });
 
 app.post('/clock', (req, res) => {
-  logger.info('app: starting POST /clock')
+  logger.info('web: starting POST /clock')
   stopAllAnimations();
   startAnimation('clock');
   res.sendStatus(200);

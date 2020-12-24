@@ -18,6 +18,8 @@ There's more, but we'll get to that.
 
 ## start up
 
+**These instructions are temporary. Ultimately all of this will be done on power-up and the app will make sure everything is set up correctly.**
+
 0. Install and start a local copy of redis before using this. check out the command:
 
 `npm run start-redis`
@@ -56,3 +58,17 @@ More info at https://github.com/darky/bull-repl
 ## logging
 
 To be supplied
+
+## animation subsystem
+
+Animations are sequences of device values at given times.
+
+Animations are created by adding delayed jobs to the device-values queues.
+
+Only one animation can run at a time. Starting a new animation flushes the queues before adding the new values and times.
+
+repeating animations are still being worked out. Our currently only repeated animation is the time which is implemented with a node timer that adds a new value to the queue every minute.
+
+## driving hardware with a raspi
+
+
