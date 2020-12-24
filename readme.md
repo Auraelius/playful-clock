@@ -4,11 +4,17 @@
 
 ## architecture
 
-This has a worker process running as root manipulating the raspberry pi and arduinix hardware to display numbers of various sorts on some nixie tubes.
+This has a worker process running as root manipulating the raspberry pi and arduinix hardware to display numbers of various sorts on some nixie tubes. It also uses servos and custom signals to use antique gauges for other displays.
 
 The worker gets its commands via a queue from an express app that allows us to control the nixies from the web using a REST API. The express app also sets up and runs animations on the nixies in response to HTTP requests.
 
 The most basic animation is a clock that updates the nixies once a second. This is the default mode of the system.
+
+There's more, but we'll get to that.
+
+
+![architecture notes](./public/img/architecture-notes.jpeg)
+
 
 ## start up
 
