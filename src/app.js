@@ -25,6 +25,7 @@ import {
   stopAllAnimations, 
   startAnimation
 } from './animations/utils.js';
+import translateStatus from './translate-status.js'
 import validateBearerToken from './validate-bearer-token.js';
 
 // let's get down to business
@@ -66,7 +67,7 @@ app.get('/', (req, res) => {
   res.send('Nixie server is listening');
 });
 
-// app.use(validateBearerToken);
+// // app.use(validateBearerToken);
 
 // all endpoints take a json payload if they take one at all
 app.use(express.json());
@@ -75,9 +76,17 @@ app.use(express.json());
 
 app.get('/setup', async (req, res) => {
   logger.info('app: starting GET /setup')
-  await valueQueue.add('setup');
-  res.sendStatus(200);
+  // //let jobStatus , resStatus ; 
+  let job = await valueQueue.add('setup');
+  // //jobStatus = await job.getstate();
+  // //resStatus = translateStatus(jobStatus);
+  // // res.status(resStatus.code).send(resStatus.message);
+  res.status(200).send("I don't know if anything worked, but I'm hopeful....");
+  // todo get actual status from the queue/job before sending the response
+  // todo the response should return the current state of the display 
 });
+
+
 app.get('/shutdown', async (req, res) => {
   logger.info('app: starting GET /shutdown')
   await valueQueue.add('shutdown');
