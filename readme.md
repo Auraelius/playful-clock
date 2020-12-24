@@ -1,5 +1,7 @@
 # Playful nixie-and-antique-meter-based clock
 
+![sketch](./public/img/playful-clock-sketch.png)
+
 ## architecture
 
 This has a worker process running as root manipulating the raspberry pi and arduinix hardware to display numbers of various sorts on some nixie tubes.
