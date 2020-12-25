@@ -1,12 +1,4 @@
-/* 
-  this utility module holds some storage for the nitty gritty details
-  and a bunch of functions for manipulating those details
-
-  there are other utilities that don't need access to these common data structures
-*/
 import logger from '../logger.js'
-
-// interface from worker 
 import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
 
 // interface to hardware
@@ -28,11 +20,8 @@ export function tubeMultiplexer (){
     by setting the raspi gpio pins appropriately
     then it checks for new values, sets things up for the next pair, and goes to sleep.
   */
-
-  // todo remove this for faster performance (but continue to gather timing metrics)
-  // // logger.info(`worker-utils: tubeMultiplexer: starting. tubePair: ${tubePair}`);
   try {
-    displayNumberPair(tubePair, currentValue, pins ); 
+    displayNumberPair(tubePair, currentValue); 
   } catch(e) {
     throw (`tubeMultiplexer: could not set GPIO pins. displayNumberPair: ${tubePair}, Error: ${e}`);
   } //? who catches this?
@@ -55,18 +44,108 @@ export function tubeMultiplexer (){
   }
 }
 
-function displayNumberPair(pair, value, pins){
+function displayNumberPair(pair, value){
   if(isEmpty(pins)) throw 'displayNumberPair: empty pins object'; // did we forget to set up?
- // disable anodes for all pairs (no high voltage)
-// set the cathodes for both digits from the value
-// set the PWM on output enables from the brightness
-// enable the anode for this pair
+ 
+  turnOffAllTubes() // disable anodes for all pairs (no high voltage)
+  setCathodes(pair, value); 
+  setBrightness(pair, value); // set the PWM on output enables from the brightness
+  setAnode(pair); // enable the anode for this pai
 }
 
 function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
+function turnOffAllTubes(){
+  pins.anode1.digitalWrite(0);
+  pins.anode2.digitalWrite(0);
+  pins.anode3.digitalWrite(0);
+  pins.anode4.digitalWrite(0);
+}
+
+function setCathodes(pair, value){
+  // Load the a,b,c,d.. to send to the SN74141 IC (1)
+  // This method looks up a set of four pin values using 
+  // a switch statement. We will use an array to save time
+  // and code space when things get more complicated.
+
+  // pair goes from 0-3
+  // todo adapt this to smaller tube sets (2,4,6) based on process.env.NUMBER_OF_TUBES
+  let [a,b,c,d] = bcd(value.digits[pair])
+  pins.cathode1a.digitalWrite(a);
+  pins.cathode1b.digitalWrite(b);
+  pins.cathode1c.digitalWrite(c);
+  pins.cathode1d.digitalWrite(d);
+  [a,b,c,d] = bcd(value.digits[pair+4])
+  pins.cathode2a.digitalWrite(a);
+  pins.cathode2b.digitalWrite(b);
+  pins.cathode2c.digitalWrite(c);
+  pins.cathode2d.digitalWrite(d);
+} 
+
+function bcd(numeral){
+  // these values come from an old 5441/7441 BCD decoder & Nixie Driver datasheet
+  // the values for blanks are what the 74141 needs to inhibit output
+  // BUT with the 5441 this will display as '5'. 
+  // and we'll have to blank that digit some other way
+
+  let a,b,c,d;
+  
+  switch (numeral) {
+    case '0': d=0; c=0; b=0; a=0; break; 
+    case '1': d=0; c=0; b=0; a=1; break; 
+    case '2': d=0; c=0; b=1; a=0; break; 
+    case '3': d=0; c=0; b=1; a=1; break; 
+    case '4': d=0; c=1; b=0; a=0; break; 
+    case '5': d=0; c=1; b=0; a=1; break; 
+    case '6': d=0; c=1; b=1; a=0; break; 
+    case '7': d=0; c=1; b=1; a=1; break; 
+    case '8': d=1; c=0; b=0; a=0; break; 
+    case '9': d=1; c=0; b=0; a=1; break; 
+    case ' ':
+    case 'b':
+      a=1; b=1; c=1; d=1
+  }
+
+  return [a,b,c,d];
+}
+
+function setBrightness(pair, value){
+// right now we are just disabling the digit output if the digit is a ' ' or 'b' or the brightness is 0
+// todo we will figure out how to PWM the output enable next
+  // todo adapt this to smaller tube sets (2,4,6) based on process.env.NUMBER_OF_TUBES
+
+  let output1, output2 = 0;
+  const blank = RegExp(/ |b/) // look for a ' ' or a 'b'
+  if( blank.test(value.digits[pair]) || value.brightness[pair] == 0 ){
+    output1 = 1; // disable output
+  }
+  if( blank.test(value.digits[pair+4]) || value.brightness[pair+4] == 0 ){
+    output2 = 1;
+  }
+  pins.digit1pwm.digitalWrite(output1);
+  pins.digit2pwm.digitalWrite(output2);
+  return true;
+}
+
+function setAnode(pair){
+  switch (pair) {
+    case 0:
+      pins.anode1.digitalWrite(1);
+      break;
+    case 1:
+      pins.anode2.digitalWrite(1);
+      break;
+    case 2:
+      pins.anode3.digitalWrite(1);
+      break;
+    case 3:
+      pins.anode4.digitalWrite(1);
+      break;
+  }
+  return true;
+} 
 
 //----------------------------------------------------------------//--
 export function setNextValue(jobData, value) {

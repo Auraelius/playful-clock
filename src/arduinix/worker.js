@@ -18,7 +18,6 @@ import { invalidDisplayJobData } from './invalid-display-job-data.js';
 import { tubeMultiplexer } from './worker-utils.js';
 import { setUpArduinix, shutDownArduinix } from './setup-utils.js';
 
-
 // setup worker from configuration environment variables
 const configuration = dotenv.config();
 configuration.error
