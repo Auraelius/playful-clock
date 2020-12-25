@@ -46,7 +46,7 @@ import logger from '../logger.js';
   returns false if it can't stop everything
 */
 function stopAllAnimations(){
-  logger.info(`stopAllAnimations running`)
+  logger.info(`stopAllAnimations stub running`)
 
 // * if there are any timers running, stop them
 // * flush all the device queues
@@ -63,7 +63,7 @@ function stopAllAnimations(){
 */
 
 function startAnimation(animationName, options) {
-  logger.info(`startAnimation running`);
+  logger.info(`startAnimation stub running`);
 
   // verify that the animationName exists; log and throw if not
   // if it's a one-shot, call the animation routine asynchronously

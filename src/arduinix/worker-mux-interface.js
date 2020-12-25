@@ -15,6 +15,8 @@
   The mux currently always completes the display of all the digits before checking if there's a newValue from the worker. we want each number to be displayed at least once
 
 */
+
+
 const nextValueStatusEnum = {
   SET: 'set', // worker has set new value
   ACCEPTED: 'accepted', // mux has accepted 

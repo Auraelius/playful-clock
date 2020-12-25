@@ -8,18 +8,16 @@
   it returns error status if unable to accomplish the request
   it calls the done() method
 */
-
-import logger from '../logger.js';
 import dotenv from 'dotenv';
 import Queue from 'bull';
+
+// our stuff
+import logger from '../logger.js';
 import { nextValue, nextValueStatusEnum as s } from './worker-mux-interface.js';
 import { invalidDisplayJobData } from './invalid-display-job-data.js';
-import {
-  tubeMultiplexer,
-  setUpArduinix,
-  setNextValue,
-  shutDownArduinix,
-} from './worker-utils.js';
+import { tubeMultiplexer } from './worker-utils.js';
+import { setUpArduinix, shutDownArduinix } from './setup-utils.js';
+
 
 // setup worker from configuration environment variables
 const configuration = dotenv.config();
@@ -27,35 +25,31 @@ configuration.error
   ? logger.error('Worker startup error: ', configuration.error)
   : logger.info('Worker startup configuration: ', configuration.parsed);
 
-// attach to the correct queue
-const deviceQueue = new Queue('device-values'); // todo catch and log errors
+// attach to the correct queue 
+// todo catch and log errors
+const deviceQueue = new Queue('device-values'); 
 
 //  common variables
 let tubeMuxTimer = {}; // created when we start mux. used to shut mux down
 const tubeMuxInterval = process.env.TUBE_MUX_INTERVAL_MS;
 
+//----------------------------------------------------------------//--
 // worker processing
 
-//----------------------------------------------------------------//--
 // ? currently doesn't have error checking but the try/catch will be useful later
 deviceQueue.process('setup', async (job, done) => {
   logger.info('worker: got SETUP command');
   try {
-    logger.info('worker: setting up Arduinix');
     setUpArduinix();
-    logger.info('worker: setting up the mux');
-    tubeMuxTimer = setInterval(() => {tubeMultiplexer(nextValue)}, tubeMuxInterval);
+    tubeMuxTimer = setInterval(() => {tubeMultiplexer()},  tubeMuxInterval);
     logger.info('worker: setup successful');
     done(null, 'setup successful'); // signal job successful
   } catch(e) {
-    logger.error(
-      `worker setup exception: ${e}`
-    );
+    logger.error(`worker setup exception: ${e}`);
     done(`worker setup exception: ${e}`);
   }
 });
 
-//----------------------------------------------------------------//--
 deviceQueue.process('display', async (job, done) => {
   logger.info(`worker got DISPLAY command: ${job.data}`);
 
@@ -79,12 +73,11 @@ deviceQueue.process('display', async (job, done) => {
   done(null, 'display finished'); // signal job successful
 });
 
-//----------------------------------------------------------------//--
 deviceQueue.process('shutdown', async (job, done) => {
   logger.info('worker got SHUTDOWN command');
   try {
     clearInterval(tubeMuxTimer);
-    //// shutDownArduinix(job.data);
+    shutDownArduinix();
     logger.info('worker stopped the mux, and shut down the arduinix');
     done(null, 'shutdown successful'); // signal job successful
   } catch {
