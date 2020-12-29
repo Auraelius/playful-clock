@@ -8,11 +8,14 @@ import { pins } from './hardware-data.js'
 
 // persistant private storage
 let currentValue = {      // the number we are displaying
-  digits: '12345678',
+  digits: '01230000',
   brightness: '99999999'
 }; 
 let tubePair = 0;
-let numberOfPairs = process.env.NUMBER_OF_TUBES/2;
+// let numberOfPairs = process.env.NUMBER_OF_TUBES/2; //! this isn't ready when we start the mux
+let numberOfPairs = 4;
+console.log(`tubeMultiplexer: process.env.NUMBER_OF_TUBES: ${process.env.NUMBER_OF_TUBES},numberOfPairs: ${numberOfPairs}`)
+
 //----------------------------------------------------------------//--
 export function tubeMultiplexer (){
   /* 
@@ -26,7 +29,8 @@ export function tubeMultiplexer (){
     throw (`tubeMultiplexer: could not set GPIO pins. displayNumberPair: ${tubePair}, Error: ${e}`);
   } //? who catches this?
 
-  if (tubePair++ < numberOfPairs) { // more pairs to go; back to sleep
+  tubePair += 1; // let's set up the next pair
+  if (tubePair < numberOfPairs) { // more pairs to go; back to sleep
     return true; 
   } else if (nextValue.status === s.ACCEPTED || nextValue.status === s.DISPLAYED ) {
     // looks like there's no new newValue (that would be status === SET)
@@ -45,11 +49,14 @@ export function tubeMultiplexer (){
 }
 
 function displayNumberPair(pair, value){
+  // logger.info(`displayNumberPair: pair: ${pair} digits: ${value.digits} brightness: ${value.brightness}`)
+  // logger.info(`displayNumberPair: pins: ${pins}` )
+
   if(isEmpty(pins)) throw 'displayNumberPair: empty pins object'; // did we forget to set up?
  
   turnOffAllTubes() // disable anodes for all pairs (no high voltage)
   setCathodes(pair, value); 
-  setBrightness(pair, value); // set the PWM on output enables from the brightness
+  // setBrightness(pair, value); // set the PWM on output enables from the brightness
   setAnode(pair); // enable the anode for this pai
 }
 
@@ -58,6 +65,7 @@ function isEmpty(obj) {
 }
 
 function turnOffAllTubes(){
+  // logger.info(`TurnOffAllTubes`);
   pins.anode1.digitalWrite(0);
   pins.anode2.digitalWrite(0);
   pins.anode3.digitalWrite(0);
@@ -65,6 +73,7 @@ function turnOffAllTubes(){
 }
 
 function setCathodes(pair, value){
+  // logger.info(`setCathodes`);
   // Load the a,b,c,d.. to send to the SN74141 IC (1)
   // This method looks up a set of four pin values using 
   // a switch statement. We will use an array to save time
@@ -73,6 +82,7 @@ function setCathodes(pair, value){
   // pair goes from 0-3
   // todo adapt this to smaller tube sets (2,4,6) based on process.env.NUMBER_OF_TUBES
   let [a,b,c,d] = bcd(value.digits[pair])
+  console.log(`setCathodes: pair: ${pair} digits: ${value.digits} abcd: ${a}${b}${c}${d}`)
   pins.cathode1a.digitalWrite(a);
   pins.cathode1b.digitalWrite(b);
   pins.cathode1c.digitalWrite(c);
@@ -124,8 +134,9 @@ function setBrightness(pair, value){
   if( blank.test(value.digits[pair+4]) || value.brightness[pair+4] == 0 ){
     output2 = 1;
   }
-  pins.digit1pwm.digitalWrite(output1);
-  pins.digit2pwm.digitalWrite(output2);
+  // ! These throw an exception
+  // pins.digit1pwm.digitalWrite(output1);
+  // pins.digit2pwm.digitalWrite(output2);
   return true;
 }
 
