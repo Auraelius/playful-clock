@@ -4,9 +4,11 @@
 
 ## architecture
 
-This has a worker process running as root manipulating the raspberry pi and arduinix hardware to display numbers of various sorts on some nixie tubes. It also uses servos and custom signals to use antique gauges for other displays.
+This is an express-based API server with queuing and a privileged hardware layer.
 
-The worker gets its commands via a queue from an express app that allows us to control the nixies from the web using a REST API. The express app also sets up and runs animations on the nixies in response to HTTP requests.
+The hardware layer has a worker process running as root manipulating the raspberry pi and arduinix hardware to display numbers of various sorts on some nixie tubes. It also uses servos and custom signals to use antique gauges for other displays.
+
+The worker gets its commands via a queue from the express app which allows us to control the nixies from the web using a REST API. The express app also sets up and runs animations on the nixies in response to HTTP requests.
 
 The most basic animation is a clock that updates the nixies once a second. This is the default mode of the system.
 

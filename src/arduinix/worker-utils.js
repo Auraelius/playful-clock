@@ -82,7 +82,10 @@ function setCathodes(pair, value){
   // pair goes from 0-3
   // todo adapt this to smaller tube sets (2,4,6) based on process.env.NUMBER_OF_TUBES
   let [a,b,c,d] = bcd(value.digits[pair])
-  console.log(`setCathodes: pair: ${pair} digits: ${value.digits} abcd: ${a}${b}${c}${d}`)
+  
+  // for debug - output info on the same line over and over
+  process.stdout.write(`setCathodes: pair: ${pair} digits: ${value.digits} abcd: ${a}${b}${c}${d}\r`)
+
   pins.cathode1a.digitalWrite(a);
   pins.cathode1b.digitalWrite(b);
   pins.cathode1c.digitalWrite(c);

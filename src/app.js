@@ -25,6 +25,7 @@ import {
   stopAllAnimations, 
   startAnimation
 } from './animations/utils.js';
+import { invalidDisplayJobData } from './arduinix/invalid-display-job-data.js';
 import translateStatus from './translate-status.js'
 import validateBearerToken from './validate-bearer-token.js';
 
@@ -102,7 +103,11 @@ app.post('/clock', (req, res) => {
 
 app.post('/display', async (req, res)=>{
   // todo validate request
-  const newValue = req.body; // should have value and intensity properties
+  if (invalidDisplayJobData(req.body)) {
+    logger.error(`server: invalid display request data: ${JSON.stringify(req.body)}`)
+    return res.status(400).send('Invalid display request data')
+  }
+  const newValue = req.body; // should have digits and brightness properties
   console.table(newValue);
   stopAllAnimations();
   await valueQueue.add('display', newValue);

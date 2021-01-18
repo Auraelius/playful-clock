@@ -50,11 +50,12 @@ deviceQueue.process('setup', async (job, done) => {
 });
 
 deviceQueue.process('display', async (job, done) => {
-  logger.info(`worker got DISPLAY command: ${job.data}`);
+  logger.info(`worker got DISPLAY command: ${JSON.stringify(job.data)}`);
 
   if (invalidDisplayJobData(job.data)) {
-    logger.error(`worker: invalid job data: ${job.data}`);
+    logger.error(`worker: invalid job data: ${JSON.stringify(job.data)}`);
     done(new Error('invalid job data'));
+    return;
   }
 
   if (nextValue.status === s.SET || nextValue.status === s.ACCEPTED) {
