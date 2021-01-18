@@ -5,8 +5,14 @@
 // it uses a Bull message queue to send values to a separate node process 
 // that has to run as root in order to control the GPIO hardware
 
+import logger from './logger.js';
+
 // configuration variables
 import dotenv from 'dotenv';
+const configuration = dotenv.config();
+configuration.error
+  ? logger.error('web: startup error: ', configuration.error)
+  : logger.info('web: startup configuration: ', configuration.parsed);
 
 // here are all the web server pieces
 import express from 'express';
@@ -19,7 +25,6 @@ import Queue  from 'bull';
 import { setQueues, BullAdapter, router } from 'bull-board';
 
 // Here's our code:
-import logger from './logger.js';
 import errorHandler from './error-handler.js';
 import {
   stopAllAnimations, 
@@ -33,10 +38,6 @@ import validateBearerToken from './validate-bearer-token.js';
 const app = express();
 
 // setup app - first get environment vars
-const configuration = dotenv.config();
-configuration.error
-  ? logger.error('web: startup error: ', configuration.error)
-  : logger.info('web: startup configuration: ', configuration.parsed);
 
 const NODE_ENV = process.env.NODE_ENV;
 
@@ -102,7 +103,7 @@ app.post('/clock', (req, res) => {
 });
 
 app.post('/display', async (req, res)=>{
-  // todo validate request
+  // validate request
   if (invalidDisplayJobData(req.body)) {
     logger.error(`server: invalid display request data: ${JSON.stringify(req.body)}`)
     return res.status(400).send('Invalid display request data')

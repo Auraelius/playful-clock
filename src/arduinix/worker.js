@@ -8,8 +8,13 @@
   it returns error status if unable to accomplish the request
   it calls the done() method
 */
+
+// setup worker from configuration environment variables
 import dotenv from 'dotenv';
-import Queue from 'bull';
+const configuration = dotenv.config();
+configuration.error
+  ? logger.error('Worker startup error: ', configuration.error)
+  : logger.info('Worker startup configuration: ', configuration.parsed);
 
 // our stuff
 import logger from '../logger.js';
@@ -18,14 +23,9 @@ import { invalidDisplayJobData } from './invalid-display-job-data.js';
 import { tubeMultiplexer } from './worker-utils.js';
 import { setUpArduinix, shutDownArduinix } from './setup-utils.js';
 
-// setup worker from configuration environment variables
-const configuration = dotenv.config();
-configuration.error
-  ? logger.error('Worker startup error: ', configuration.error)
-  : logger.info('Worker startup configuration: ', configuration.parsed);
-
 // attach to the correct queue 
 // todo catch and log errors
+import Queue from 'bull';
 const deviceQueue = new Queue('device-values'); 
 
 //  common variables
